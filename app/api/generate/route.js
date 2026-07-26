@@ -3,16 +3,18 @@ import { NextResponse } from 'next/server';
 export async function POST(request) {
   try {
     const { prompt } = await request.json();
+    const token = process.env.HF_API_TOKEN;
 
-    if (!prompt) {
-      return NextResponse.json({ error: "कृपया कुछ लिखिए।" }, { status: 400 });
+    if (!token) {
+      return NextResponse.json({ error: 'API Token missing in Vercel' }, { status: 500 });
     }
 
+    // Hugging Face का बिल्कुल सही और नया API URL (बिना किसी सबडोमेन एरर के)
     const response = await fetch(
-      "https://api-inference.huggingface.co/models/PAIR/Text2Video-Zero",
+      "https://api.huggingface.co/models/stabilityai/stable-diffusion-xl-base-1.0",
       {
         headers: { 
-          Authorization: `Bearer ${process.env.HF_API_TOKEN}`,
+          "Authorization": `Bearer ${token}`, 
           "Content-Type": "application/json" 
         },
         method: "POST",
@@ -21,18 +23,16 @@ export async function POST(request) {
     );
 
     if (!response.ok) {
-      throw new Error("AI सर्वर से कनेक्ट करने में दिक्कत आ रही है।");
+      const errorText = await response.text();
+      return NextResponse.json({ error: `Hugging Face Error: ${errorText}` }, { status: response.status });
     }
 
-    const blob = await response.blob();
-    const buffer = Buffer.from(await blob.arrayBuffer());
-    const base64Video = buffer.toString('base64');
-    const videoUrl = `data:video/mp4;base64,${base64Video}`;
+    const arrayBuffer = await response.arrayBuffer();
+    const buffer = Buffer.from(arrayBuffer);
+    const base64Image = buffer.toString('base64');
 
-    return NextResponse.json({ videoUrl });
-
+    return NextResponse.json({ image: `data:image/jpeg;base64,${base64Image}` });
   } catch (error) {
-    console.error("HF Error:", error);
     return NextResponse.json({ error: error.message }, { status: 500 });
   }
 }
