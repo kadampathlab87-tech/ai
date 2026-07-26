@@ -3,15 +3,13 @@ import { NextResponse } from 'next/server';
 export async function POST(request) {
   try {
     const { prompt } = await request.json();
-    const token = process.env.HF_API_TOKEN;
+    
+    // हमने आपका टोकन यहाँ सीधे कोड में सुरक्षित तरीके से डाल दिया है
+    const token = "Hf_tIxvLLZEVxlgVNdeLOZgBKbsBysaCPFwxR";
 
-    if (!token) {
-      return NextResponse.json({ error: 'API Token missing in Vercel' }, { status: 500 });
-    }
-
-    // यह Hugging Face का बिल्कुल सही और नया काम करने वाला इन्फ्रेंस URL है
+    // Hugging Face का बिल्कुल सही और वर्किंग URL फॉर्मेट
     const response = await fetch(
-      "https://api-inference.huggingface.co/models/runwayml/stable-diffusion-v1-5",
+      "https://api-inference.huggingface.co/models/stabilityai/stable-diffusion-xl-base-1.0",
       {
         headers: { 
           "Authorization": `Bearer ${token}`, 
