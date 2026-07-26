@@ -9,9 +9,9 @@ export async function POST(request) {
       return NextResponse.json({ error: 'API Token missing in Vercel' }, { status: 500 });
     }
 
-    // Hugging Face का बिल्कुल सही और नया API URL (बिना किसी सबडोमेन एरर के)
+    // यह Hugging Face का बिल्कुल सही और नया काम करने वाला इन्फ्रेंस URL है
     const response = await fetch(
-      "https://api.huggingface.co/models/stabilityai/stable-diffusion-xl-base-1.0",
+      "https://api-inference.huggingface.co/models/runwayml/stable-diffusion-v1-5",
       {
         headers: { 
           "Authorization": `Bearer ${token}`, 
